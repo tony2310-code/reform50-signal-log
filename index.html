@@ -34,6 +34,35 @@
     .right { text-align: right; }
     .errorbox { display:none; margin-top:10px; padding:10px; border:1px solid #b00020; border-radius:10px; background:#fff5f5; color:#7a0010; }
     .editbar { display:none; margin-top:10px; padding:10px; border:1px solid #111; border-radius:10px; background:#fafafa; }
+
+    /* Action menu */
+    .actionsCell { position: relative; min-width: 70px; }
+    .kebab {
+      width: 44px;
+      padding: 8px 0;
+      border-radius: 10px;
+      background: #fff;
+      color: #111;
+      border: 1px solid #111;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 42px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 8px;
+      width: 160px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+      z-index: 20;
+    }
+    .menu button { width: 100%; margin: 6px 0; }
+    .menu button.secondary { background:#fff; color:#111; border:1px solid #111; }
+    .menu button.danger { background:#b00020; color:#fff; border:1px solid #b00020; }
   </style>
 </head>
 <body>
@@ -177,7 +206,7 @@
           <th>Cred</th>
           <th>Status</th>
           <th>Notes</th>
-          <th class="nowrap"></th>
+          <th class="nowrap">Actions</th>
         </tr>
       </thead>
       <tbody id="logBody"></tbody>
@@ -189,9 +218,11 @@
   </div>
 
 <script>
-  const STORAGE_KEY = "reform50_signal_log_v2"; // bumped version for safety
+  // Keep the same storage key as your current EDIT version so you don't lose data.
+  const STORAGE_KEY = "reform50_signal_log_v2";
   const CTA_KEY = "reform50_cta_start_v1";
   let editingId = null;
+  let openMenuForId = null;
 
   function pad2(n){ return String(n).padStart(2,"0"); }
   function nowLocalDate(){ const d=new Date(); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
@@ -274,6 +305,11 @@
     return String(Date.now()) + Math.random().toString(16).slice(2);
   }
 
+  function closeAllMenus(){
+    document.querySelectorAll(".menu").forEach(m => m.style.display = "none");
+    openMenuForId = null;
+  }
+
   function renderTable(){
     const entries = loadEntries();
     entries.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
@@ -302,9 +338,12 @@
         <td>${escapeHtml(e.cred)}</td>
         <td>${escapeHtml(e.status)}</td>
         <td>${escapeHtml(e.notes || "")}</td>
-        <td class="nowrap">
-          <button class="secondary" data-edit="${e.id}" type="button">Edit</button>
-          <button class="secondary" data-del="${e.id}" type="button" style="margin-top:6px;">Delete</button>
+        <td class="actionsCell nowrap">
+          <button class="kebab" data-more="${e.id}" type="button">⋯</button>
+          <div class="menu" id="menu-${e.id}">
+            <button class="secondary" data-edit="${e.id}" type="button">Edit</button>
+            <button class="danger" data-del="${e.id}" type="button">Delete</button>
+          </div>
         </td>
       `;
       body.appendChild(tr);
@@ -314,19 +353,44 @@
     document.getElementById("totClicks").textContent = "Clicks: " + tc;
     document.getElementById("totDMs").textContent = "DMs: " + td;
 
+    // Actions
+    body.querySelectorAll("button[data-more]").forEach(btn => {
+      btn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        const id = btn.getAttribute("data-more");
+        const menu = document.getElementById("menu-" + id);
+        if(!menu) return;
+
+        // toggle
+        if(openMenuForId && openMenuForId !== id){
+          closeAllMenus();
+        }
+        const isOpen = (menu.style.display === "block");
+        closeAllMenus();
+        if(!isOpen){
+          menu.style.display = "block";
+          openMenuForId = id;
+        }
+      });
+    });
+
     body.querySelectorAll("button[data-del]").forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
         const id = btn.getAttribute("data-del");
         const updated = loadEntries().filter(x => x.id !== id);
         saveEntries(updated);
         if(editingId === id){ cancelEdit(); }
+        closeAllMenus();
         renderTable();
       });
     });
 
     body.querySelectorAll("button[data-edit]").forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
         const id = btn.getAttribute("data-edit");
+        closeAllMenus();
         startEdit(id);
       });
     });
@@ -379,6 +443,7 @@
     if(!ok) return;
     localStorage.removeItem(STORAGE_KEY);
     cancelEdit();
+    closeAllMenus();
     renderTable();
   }
 
@@ -533,6 +598,11 @@
       saveCta(val);
       renderCheckpoint();
     });
+
+    // Close menus when clicking elsewhere
+    document.addEventListener("click", () => closeAllMenus());
+    document.addEventListener("scroll", () => closeAllMenus(), { passive: true });
+    document.addEventListener("keydown", (e) => { if(e.key === "Escape"){ closeAllMenus(); } });
   }
 
   init();
