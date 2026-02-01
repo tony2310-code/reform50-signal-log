@@ -7,188 +7,91 @@
   <style>
     :root{
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      color: #111;
-      background: #fff;
+      color:#111; background:#fff;
     }
-    body{
-      margin: 18px;
-      max-width: 1024px;
+    body{ margin:18px; max-width:1024px; }
+    h1{ margin:0 0 6px 0; font-size:22px; line-height:1.2; }
+    .sub{ margin:0 0 18px 0; color:#444; line-height:1.35; }
+    .card{ border:1px solid #ddd; border-radius:12px; padding:14px; margin:12px 0; background:#fff; }
+    label{ display:block; margin:10px 0 6px; font-size:13px; color:#333; }
+    input,select,textarea,button{
+      width:100%; font-size:16px; padding:10px;
+      border-radius:12px; border:1px solid #ccc; box-sizing:border-box;
     }
-    h1{
-      margin: 0 0 6px 0;
-      font-size: 22px;
-      line-height: 1.2;
-    }
-    .sub{
-      margin: 0 0 18px 0;
-      color: #444;
-      line-height: 1.35;
-    }
-    .card{
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 14px;
-      margin: 12px 0;
-      background: #fff;
-    }
-    label{
-      display:block;
-      margin: 10px 0 6px;
-      font-size: 13px;
-      color: #333;
-    }
-    input, select, textarea, button{
-      width: 100%;
-      font-size: 16px;
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    textarea{
-      min-height: 76px;
-      resize: vertical;
-    }
-    button{
-      cursor: pointer;
-      background: #111;
-      color: #fff;
-      border: 1px solid #111;
-    }
-    button.secondary{
-      background: #fff;
-      color: #111;
-      border: 1px solid #111;
-    }
-    button.danger{
-      background: #b00020;
-      border: 1px solid #b00020;
-      color: #fff;
-    }
+    textarea{ min-height:76px; resize:vertical; }
+    button{ cursor:pointer; background:#111; color:#fff; border:1px solid #111; }
+    button.secondary{ background:#fff; color:#111; border:1px solid #111; }
+    button.danger{ background:#b00020; border:1px solid #b00020; color:#fff; }
 
-    /* Responsive grid */
-    .grid{ display:grid; grid-template-columns: 1fr; gap: 10px; }
-    @media (min-width: 760px){
-      .grid.two{ grid-template-columns: 1fr 1fr; }
-      .grid.three{ grid-template-columns: 1fr 1fr 1fr; }
+    .grid{ display:grid; grid-template-columns:1fr; gap:10px; }
+    @media (min-width:760px){
+      .grid.two{ grid-template-columns:1fr 1fr; }
+      .grid.three{ grid-template-columns:1fr 1fr 1fr; }
     }
-    .btnrow{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    @media (min-width: 760px){
-      .btnrow{ grid-template-columns: 1fr 1fr 1fr; }
-    }
+    .btnrow{ display:grid; grid-template-columns:1fr; gap:10px; margin-top:12px; }
+    @media (min-width:760px){ .btnrow{ grid-template-columns:1fr 1fr 1fr; } }
 
-    .small{ font-size: 12px; color: #555; line-height: 1.35; }
-    .muted{ color: #666; }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; white-space: pre-wrap; }
-    .pill{
-      display:inline-block;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background:#f3f3f3;
-      font-size: 12px;
-    }
+    .small{ font-size:12px; color:#555; line-height:1.35; }
+    .muted{ color:#666; }
+    .mono{ font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12px; white-space:pre-wrap; }
+    .pill{ display:inline-block; padding:4px 8px; border-radius:999px; background:#f3f3f3; font-size:12px; }
     .right{ text-align:right; }
 
     .errorbox{
-      display:none;
-      margin-top:10px;
-      padding:10px;
-      border:1px solid #b00020;
-      border-radius:12px;
-      background:#fff5f5;
-      color:#7a0010;
+      display:none; margin-top:10px; padding:10px;
+      border:1px solid #b00020; border-radius:12px; background:#fff5f5; color:#7a0010;
     }
     .editbar{
-      display:none;
-      margin-top:10px;
-      padding:10px;
-      border:1px solid #111;
-      border-radius:12px;
-      background:#fafafa;
+      display:none; margin-top:10px; padding:10px;
+      border:1px solid #111; border-radius:12px; background:#fafafa;
+    }
+    .okbox{
+      display:none; margin-top:10px; padding:10px;
+      border:1px solid #0a7a2f; border-radius:12px; background:#f2fff6; color:#0a5a22;
     }
 
-    /* Table layout reliability */
     .tableWrap{
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      border: 1px solid #eee;
-      border-radius: 12px;
+      width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;
+      border:1px solid #eee; border-radius:12px;
     }
     table{
-      width: 100%;
-      min-width: 980px; /* ensures consistent column widths on small screens */
-      border-collapse: collapse;
-      background: #fff;
+      width:100%; min-width:980px;
+      border-collapse:collapse; background:#fff;
     }
-    th, td{
-      border-bottom: 1px solid #eee;
-      padding: 10px 8px;
-      text-align: left;
-      vertical-align: top;
-      font-size: 14px;
-      white-space: normal;
-      word-break: break-word;
+    th,td{
+      border-bottom:1px solid #eee;
+      padding:10px 8px; text-align:left; vertical-align:top; font-size:14px;
+      white-space:normal; word-break:break-word;
     }
     th{
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      background: #fff;
-      font-size: 12px;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      position:sticky; top:0; z-index:5; background:#fff;
+      font-size:12px; color:#555; text-transform:uppercase; letter-spacing:0.04em;
     }
-    .nowrap{ white-space: nowrap; }
+    .nowrap{ white-space:nowrap; }
 
-    /* Actions menu: never overflow off-screen */
-    .actionsCell{
-      position: relative;
-      min-width: 70px;
-    }
+    .actionsCell{ position:relative; min-width:70px; }
     .kebab{
-      width: 44px;
-      padding: 8px 0;
-      border-radius: 12px;
-      background: #fff;
-      color: #111;
-      border: 1px solid #111;
-      font-weight: 700;
-      line-height: 1;
+      width:44px; padding:8px 0; border-radius:12px;
+      background:#fff; color:#111; border:1px solid #111;
+      font-weight:700; line-height:1;
     }
     .menu{
-      display:none;
-      position:absolute;
-      right: 0;
-      top: 44px;
-      background:#fff;
-      border:1px solid #ddd;
-      border-radius: 12px;
-      padding: 8px;
-      width: 170px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
-      z-index: 20;
+      display:none; position:absolute; right:0; top:44px;
+      background:#fff; border:1px solid #ddd; border-radius:12px; padding:8px;
+      width:170px; box-shadow:0 10px 30px rgba(0,0,0,0.10); z-index:20;
     }
-    .menu button{ width:100%; margin: 6px 0; border-radius: 12px; }
+    .menu button{ width:100%; margin:6px 0; border-radius:12px; }
 
-    /* Make cards more compact on small screens */
-    @media (max-width: 420px){
-      body{ margin: 12px; }
-      h1{ font-size: 20px; }
-      input, select, textarea, button{ font-size: 16px; }
-      .card{ padding: 12px; }
+    @media (max-width:420px){
+      body{ margin:12px; }
+      h1{ font-size:20px; }
+      .card{ padding:12px; }
     }
   </style>
 </head>
 <body>
   <h1>ReForm50 Daily Signal Log</h1>
-  <p class="sub">Local-first. Everything stays on this device unless you export.</p>
+  <p class="sub">Local-first. Entries stay on this device. Use Export + Import to move data through iCloud Drive.</p>
 
   <div class="card" id="clockCard">
     <div class="grid two">
@@ -212,14 +115,8 @@
 
   <div class="card">
     <div class="grid three">
-      <div>
-        <label>Date</label>
-        <input id="date" type="date" />
-      </div>
-      <div>
-        <label>Time</label>
-        <input id="time" type="time" />
-      </div>
+      <div><label>Date</label><input id="date" type="date" /></div>
+      <div><label>Time</label><input id="time" type="time" /></div>
       <div>
         <label>Time block</label>
         <select id="timeBlock">
@@ -240,21 +137,12 @@
           <option value="Other">Other</option>
         </select>
       </div>
-      <div>
-        <label>Views</label>
-        <input id="views" type="number" inputmode="numeric" min="0" placeholder="0" />
-      </div>
-      <div>
-        <label>Clicks (or Opens)</label>
-        <input id="clicks" type="number" inputmode="numeric" min="0" placeholder="0" />
-      </div>
+      <div><label>Views</label><input id="views" type="number" inputmode="numeric" min="0" placeholder="0" /></div>
+      <div><label>Clicks (or Opens)</label><input id="clicks" type="number" inputmode="numeric" min="0" placeholder="0" /></div>
     </div>
 
     <div class="grid three">
-      <div>
-        <label>DMs</label>
-        <input id="dms" type="number" inputmode="numeric" min="0" placeholder="0" />
-      </div>
+      <div><label>DMs</label><input id="dms" type="number" inputmode="numeric" min="0" placeholder="0" /></div>
       <div>
         <label>Credential questions?</label>
         <select id="cred">
@@ -285,6 +173,7 @@
     </div>
 
     <div id="editBar" class="editbar"></div>
+    <div id="okBox" class="okbox"></div>
     <div id="errorBox" class="errorbox"></div>
 
     <div class="small muted" style="margin-top:10px;">Decision rules: Do not change copy outside checkpoints. Checkpoints are 24h, 48h, 72h after CTA start.</div>
@@ -301,12 +190,19 @@
         </div>
       </div>
       <div class="right">
-        <div class="small muted">Exports</div>
+        <div class="small muted">Backup + Restore (iCloud Drive)</div>
         <div class="btnrow" style="margin-top:8px;">
-          <button class="secondary" id="exportCsvBtn" type="button">Export CSV</button>
           <button class="secondary" id="exportJsonBtn" type="button">Export JSON</button>
-          <button class="danger" id="wipeBtn" type="button">Wipe All Data</button>
+          <button class="secondary" id="importJsonBtn" type="button">Import JSON</button>
+          <button class="secondary" id="exportCsvBtn" type="button">Export CSV</button>
         </div>
+        <div class="btnrow" style="margin-top:8px;">
+          <button class="danger" id="wipeBtn" type="button">Wipe All Data</button>
+          <button class="secondary" id="clearMenusBtn" type="button">Close Menus</button>
+          <button class="secondary" id="clearMsgsBtn" type="button">Clear Messages</button>
+        </div>
+        <input id="importFile" type="file" accept="application/json,.json" style="display:none;" />
+        <div class="small muted" style="margin-top:8px;">Tip: After Export on iPhone, choose iCloud Drive → ReForm50 → logs.</div>
       </div>
     </div>
 
@@ -331,7 +227,7 @@
       </table>
     </div>
 
-    <div class="small muted" style="margin-top:10px;">Tip: On iPhone, use Share → Add to Home Screen from Safari for one-tap access.</div>
+    <div class="small muted" style="margin-top:10px;">On iPhone: open this page in Safari, then Share → Add to Home Screen.</div>
   </div>
 
 <script>
@@ -361,6 +257,23 @@
   function toInt(v){
     const n = parseInt(v, 10);
     return Number.isFinite(n) && n >= 0 ? n : 0;
+  }
+
+  function showOk(msg){
+    const box = document.getElementById("okBox");
+    box.style.display = "block";
+    box.textContent = msg;
+  }
+  function showError(msg){
+    const box = document.getElementById("errorBox");
+    box.style.display = "block";
+    box.textContent = msg;
+  }
+  function clearMsgs(){
+    document.getElementById("okBox").style.display = "none";
+    document.getElementById("okBox").textContent = "";
+    document.getElementById("errorBox").style.display = "none";
+    document.getElementById("errorBox").textContent = "";
   }
 
   function renderCheckpoint(){
@@ -393,9 +306,9 @@
 
     text.textContent = "Checkpoints based on CTA start:";
     mono.textContent =
-      "CTA start: " + fmt(start) + "\\n" +
-      "24h:       " + fmt(h24) + "\\n" +
-      "48h:       " + fmt(h48) + "\\n" +
+      "CTA start: " + fmt(start) + "\n" +
+      "24h:       " + fmt(h24) + "\n" +
+      "48h:       " + fmt(h48) + "\n" +
       "72h:       " + fmt(h72);
   }
 
@@ -480,7 +393,6 @@
           menu.style.display = "block";
           openMenuForId = id;
 
-          // keep menu on-screen if near the right edge
           const rect = menu.getBoundingClientRect();
           if(rect.right > window.innerWidth){
             menu.style.right = "auto";
@@ -528,24 +440,34 @@
   }
 
   function exportJson(){
-    const data = { exportedAt: new Date().toISOString(), ctaStart: loadCta() || null, entries: loadEntries() };
+    const data = {
+      exportedAt: new Date().toISOString(),
+      ctaStart: loadCta() || null,
+      entries: loadEntries()
+    };
     downloadFile("ReForm50_signal_log.json", JSON.stringify(data, null, 2), "application/json");
   }
 
   function exportCsv(){
     const entries = loadEntries();
-    const header = ["date","time","time_block","platform","views","clicks","dms","credential_questions","status","notes","created_at"];
+    const header = ["date","time","time_block","platform","views","clicks","dms","credential_questions","status","notes","created_at","updated_at"];
     const rows = [header.join(",")];
     for(const e of entries){
-      const row = [e.date,e.time,e.timeBlock,e.platform,e.views,e.clicks,e.dms,e.cred,e.status,(e.notes||"").replaceAll('"','""'),e.createdAt]
-        .map(v => {
-          const s = String(v);
-          if(/[,\n"]/.test(s)){ return `"${s.replaceAll('"','""')}"`; }
-          return s;
-        });
+      const row = [
+        e.date, e.time, e.timeBlock, e.platform,
+        e.views, e.clicks, e.dms,
+        e.cred, e.status,
+        (e.notes || "").replaceAll('"','""'),
+        e.createdAt || "",
+        e.updatedAt || ""
+      ].map(v => {
+        const s = String(v);
+        if(/[,\n"]/.test(s)){ return `"${s.replaceAll('"','""')}"`; }
+        return s;
+      });
       rows.push(row.join(","));
     }
-    downloadFile("ReForm50_signal_log.csv", rows.join("\\n"), "text/csv");
+    downloadFile("ReForm50_signal_log.csv", rows.join("\n"), "text/csv");
   }
 
   function wipeAll(){
@@ -555,30 +477,8 @@
     cancelEdit();
     closeAllMenus();
     renderTable();
+    showOk("All data wiped on this device.");
   }
-
-  function showError(msg){
-    const box = document.getElementById("errorBox");
-    box.style.display = "block";
-    box.textContent = msg;
-  }
-  function clearError(){
-    const box = document.getElementById("errorBox");
-    box.style.display = "none";
-    box.textContent = "";
-  }
-  function showEditBar(msg){
-    const bar = document.getElementById("editBar");
-    bar.style.display = "block";
-    bar.textContent = msg;
-  }
-  function hideEditBar(){
-    const bar = document.getElementById("editBar");
-    bar.style.display = "none";
-    bar.textContent = "";
-  }
-
-  window.addEventListener("error", (e) => { showError("Error: " + (e.message || "Unknown error")); });
 
   function getFormData(){
     return {
@@ -623,8 +523,8 @@
     fillForm(e);
     document.getElementById("addBtn").textContent = "Save Changes";
     document.getElementById("cancelEditBtn").style.display = "block";
-    showEditBar("Editing entry. Make changes above, then click Save Changes.");
-    clearError();
+    document.getElementById("editBar").style.display = "block";
+    document.getElementById("editBar").textContent = "Editing entry. Make changes above, then click Save Changes.";
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -632,14 +532,14 @@
     editingId = null;
     document.getElementById("addBtn").textContent = "Add Entry";
     document.getElementById("cancelEditBtn").style.display = "none";
-    hideEditBar();
+    document.getElementById("editBar").style.display = "none";
+    document.getElementById("editBar").textContent = "";
     clearForm();
-    clearError();
   }
 
   function addOrSave(){
     try{
-      clearError();
+      clearMsgs();
       const data = getFormData();
       const entries = loadEntries();
 
@@ -655,6 +555,7 @@
         saveEntries(entries);
         cancelEdit();
         renderTable();
+        showOk("Entry updated.");
         return;
       }
 
@@ -663,9 +564,112 @@
       saveEntries(entries);
       renderTable();
       clearForm();
+      showOk("Entry added.");
     } catch(err){
       showError("Save failed: " + (err && err.message ? err.message : String(err)));
     }
+  }
+
+  // IMPORT JSON
+  function normalizeImportedEntries(arr){
+    // Ensure each entry has required fields. Keep any extra fields.
+    const out = [];
+    for(const raw of arr){
+      if(!raw || typeof raw !== "object") continue;
+      const e = { ...raw };
+
+      // Minimal defaults
+      e.id = (typeof e.id === "string" && e.id.length > 0) ? e.id : cryptoRandomId();
+      e.date = (typeof e.date === "string" && e.date.length >= 8) ? e.date : nowLocalDate();
+      e.time = (typeof e.time === "string" && e.time.length >= 3) ? e.time : nowLocalTime();
+      e.timeBlock = (typeof e.timeBlock === "string" && e.timeBlock.length) ? e.timeBlock : "Evening";
+      e.platform = (typeof e.platform === "string" && e.platform.length) ? e.platform : "Other";
+      e.views = Number.isFinite(parseInt(e.views,10)) ? parseInt(e.views,10) : 0;
+      e.clicks = Number.isFinite(parseInt(e.clicks,10)) ? parseInt(e.clicks,10) : 0;
+      e.dms = Number.isFinite(parseInt(e.dms,10)) ? parseInt(e.dms,10) : 0;
+      e.cred = (e.cred === "Yes" || e.cred === "No") ? e.cred : "No";
+      e.status = (typeof e.status === "string" && e.status.length) ? e.status : "Running";
+      e.notes = (typeof e.notes === "string") ? e.notes : "";
+      e.createdAt = (typeof e.createdAt === "string" && e.createdAt.length) ? e.createdAt : new Date().toISOString();
+
+      out.push(e);
+    }
+    return out;
+  }
+
+  function mergeById(existing, incoming){
+    const map = new Map();
+    for(const e of existing){ map.set(e.id, e); }
+    for(const e of incoming){
+      if(!map.has(e.id)){
+        map.set(e.id, e);
+      } else {
+        // Keep the newer one if updatedAt exists, else keep existing.
+        const cur = map.get(e.id);
+        const curT = Date.parse(cur.updatedAt || cur.createdAt || "");
+        const inT = Date.parse(e.updatedAt || e.createdAt || "");
+        if(Number.isFinite(inT) && (!Number.isFinite(curT) || inT >= curT)){
+          map.set(e.id, { ...cur, ...e });
+        }
+      }
+    }
+    return Array.from(map.values());
+  }
+
+  function handleImportText(jsonText){
+    let parsed;
+    try{
+      parsed = JSON.parse(jsonText);
+    } catch(err){
+      showError("Import failed. File is not valid JSON.");
+      return;
+    }
+
+    // Accept either {entries:[...], ctaStart:"..."} or just an array of entries.
+    let incomingEntries = [];
+    let incomingCta = null;
+
+    if(Array.isArray(parsed)){
+      incomingEntries = parsed;
+    } else if(parsed && typeof parsed === "object"){
+      if(Array.isArray(parsed.entries)) incomingEntries = parsed.entries;
+      if(typeof parsed.ctaStart === "string") incomingCta = parsed.ctaStart;
+    }
+
+    const normalized = normalizeImportedEntries(incomingEntries);
+    if(normalized.length === 0){
+      showError("Import failed. No entries found in that file.");
+      return;
+    }
+
+    const replace = confirm("Import mode:\n\nOK = Replace all current entries on this device\nCancel = Merge with existing entries\n\n(You can export first if you want a backup.)");
+    const current = loadEntries();
+    const finalEntries = replace ? normalized : mergeById(current, normalized);
+    saveEntries(finalEntries);
+
+    // CTA start import (optional)
+    if(incomingCta){
+      try{
+        const d = new Date(incomingCta);
+        if(!Number.isNaN(d.getTime())){
+          saveCta(incomingCta);
+          document.getElementById("ctaStart").value = incomingCta;
+          renderCheckpoint();
+        }
+      } catch(e){}
+    }
+
+    renderTable();
+    showOk(replace
+      ? ("Imported " + normalized.length + " entries (replaced).")
+      : ("Imported " + normalized.length + " entries (merged). Total now: " + finalEntries.length + "."));
+  }
+
+  function importJson(){
+    clearMsgs();
+    const input = document.getElementById("importFile");
+    input.value = "";
+    input.click();
   }
 
   function init(){
@@ -676,24 +680,40 @@
 
     document.getElementById("addBtn").addEventListener("click", addOrSave);
     document.getElementById("cancelEditBtn").addEventListener("click", cancelEdit);
-    document.getElementById("clearFormBtn").addEventListener("click", () => { clearForm(); clearError(); });
+    document.getElementById("clearFormBtn").addEventListener("click", () => { clearForm(); clearMsgs(); });
     document.getElementById("quickNowBtn").addEventListener("click", setFormNow);
 
-    document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
-    document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
+    document.getElementById("exportJsonBtn").addEventListener("click", () => { clearMsgs(); exportJson(); });
+    document.getElementById("exportCsvBtn").addEventListener("click", () => { clearMsgs(); exportCsv(); });
+    document.getElementById("importJsonBtn").addEventListener("click", importJson);
     document.getElementById("wipeBtn").addEventListener("click", wipeAll);
+
+    document.getElementById("clearMenusBtn").addEventListener("click", closeAllMenus);
+    document.getElementById("clearMsgsBtn").addEventListener("click", clearMsgs);
+
+    document.getElementById("importFile").addEventListener("change", async (ev) => {
+      const file = ev.target.files && ev.target.files[0];
+      if(!file) return;
+      try{
+        const text = await file.text();
+        handleImportText(text);
+      } catch(err){
+        showError("Import failed. Could not read the file.");
+      }
+    });
 
     document.getElementById("saveCtaBtn").addEventListener("click", () => {
       const v = document.getElementById("ctaStart").value;
       if(!v){ alert("CTA start is blank."); return; }
       saveCta(v);
       renderCheckpoint();
-      alert("Saved.");
+      showOk("CTA start saved.");
     });
     document.getElementById("clearCtaBtn").addEventListener("click", () => {
       clearCta();
       document.getElementById("ctaStart").value = "";
       renderCheckpoint();
+      showOk("CTA start cleared.");
     });
     document.getElementById("setNowBtn").addEventListener("click", () => {
       const d = new Date();
@@ -701,11 +721,16 @@
       document.getElementById("ctaStart").value = val;
       saveCta(val);
       renderCheckpoint();
+      showOk("CTA start set to now.");
     });
 
+    // Close menus on outside interactions
     document.addEventListener("click", () => closeAllMenus());
-    document.addEventListener("scroll", () => closeAllMenus(), { passive: true });
+    document.addEventListener("scroll", () => closeAllMenus(), { passive:true });
     document.addEventListener("keydown", (e) => { if(e.key === "Escape"){ closeAllMenus(); } });
+
+    // Basic runtime error surface
+    window.addEventListener("error", (e) => { showError("Error: " + (e.message || "Unknown error")); });
   }
 
   init();
