@@ -33,6 +33,7 @@
     .nowrap { white-space: nowrap; }
     .right { text-align: right; }
     .errorbox { display:none; margin-top:10px; padding:10px; border:1px solid #b00020; border-radius:10px; background:#fff5f5; color:#7a0010; }
+    .editbar { display:none; margin-top:10px; padding:10px; border:1px solid #111; border-radius:10px; background:#fafafa; }
   </style>
 </head>
 <body>
@@ -130,10 +131,12 @@
 
     <div class="btnrow">
       <button id="addBtn" type="button">Add Entry</button>
+      <button class="secondary" id="cancelEditBtn" type="button" style="display:none;">Cancel Edit</button>
       <button class="secondary" id="clearFormBtn" type="button">Clear Form</button>
       <button class="secondary" id="quickNowBtn" type="button">Set Date/Time = Now</button>
     </div>
 
+    <div id="editBar" class="editbar"></div>
     <div id="errorBox" class="errorbox"></div>
 
     <div class="small muted" style="margin-top:10px;">
@@ -186,8 +189,9 @@
   </div>
 
 <script>
-  const STORAGE_KEY = "reform50_signal_log_v1";
+  const STORAGE_KEY = "reform50_signal_log_v2"; // bumped version for safety
   const CTA_KEY = "reform50_cta_start_v1";
+  let editingId = null;
 
   function pad2(n){ return String(n).padStart(2,"0"); }
   function nowLocalDate(){ const d=new Date(); return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
@@ -298,7 +302,10 @@
         <td>${escapeHtml(e.cred)}</td>
         <td>${escapeHtml(e.status)}</td>
         <td>${escapeHtml(e.notes || "")}</td>
-        <td class="nowrap"><button class="secondary" data-del="${e.id}" type="button">Delete</button></td>
+        <td class="nowrap">
+          <button class="secondary" data-edit="${e.id}" type="button">Edit</button>
+          <button class="secondary" data-del="${e.id}" type="button" style="margin-top:6px;">Delete</button>
+        </td>
       `;
       body.appendChild(tr);
     }
@@ -312,7 +319,15 @@
         const id = btn.getAttribute("data-del");
         const updated = loadEntries().filter(x => x.id !== id);
         saveEntries(updated);
+        if(editingId === id){ cancelEdit(); }
         renderTable();
+      });
+    });
+
+    body.querySelectorAll("button[data-edit]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-edit");
+        startEdit(id);
       });
     });
   }
@@ -363,6 +378,7 @@
     const ok = confirm("Wipe all saved log data on this device?");
     if(!ok) return;
     localStorage.removeItem(STORAGE_KEY);
+    cancelEdit();
     renderTable();
   }
 
@@ -371,43 +387,115 @@
     box.style.display = "block";
     box.textContent = msg;
   }
+  function clearError(){
+    const box = document.getElementById("errorBox");
+    box.style.display = "none";
+    box.textContent = "";
+  }
+  function showEditBar(msg){
+    const bar = document.getElementById("editBar");
+    bar.style.display = "block";
+    bar.textContent = msg;
+  }
+  function hideEditBar(){
+    const bar = document.getElementById("editBar");
+    bar.style.display = "none";
+    bar.textContent = "";
+  }
+
   window.addEventListener("error", (e) => {
     showError("Error: " + (e.message || "Unknown error"));
   });
 
-  function addEntry(){
+  function getFormData(){
+    return {
+      date: document.getElementById("date").value || nowLocalDate(),
+      time: document.getElementById("time").value || nowLocalTime(),
+      timeBlock: document.getElementById("timeBlock").value,
+      platform: document.getElementById("platform").value,
+      views: toInt(document.getElementById("views").value),
+      clicks: toInt(document.getElementById("clicks").value),
+      dms: toInt(document.getElementById("dms").value),
+      cred: document.getElementById("cred").value,
+      status: document.getElementById("status").value,
+      notes: document.getElementById("notes").value.trim()
+    };
+  }
+
+  function fillForm(e){
+    document.getElementById("date").value = e.date;
+    document.getElementById("time").value = e.time;
+    document.getElementById("timeBlock").value = e.timeBlock;
+    document.getElementById("platform").value = e.platform;
+    document.getElementById("views").value = e.views;
+    document.getElementById("clicks").value = e.clicks;
+    document.getElementById("dms").value = e.dms;
+    document.getElementById("cred").value = e.cred;
+    document.getElementById("status").value = e.status;
+    document.getElementById("notes").value = e.notes || "";
+  }
+
+  function clearForm(){
+    document.getElementById("views").value = "";
+    document.getElementById("clicks").value = "";
+    document.getElementById("dms").value = "";
+    document.getElementById("notes").value = "";
+  }
+
+  function startEdit(id){
+    const entries = loadEntries();
+    const e = entries.find(x => x.id === id);
+    if(!e){ return; }
+    editingId = id;
+    fillForm(e);
+    document.getElementById("addBtn").textContent = "Save Changes";
+    document.getElementById("cancelEditBtn").style.display = "block";
+    showEditBar("Editing entry. Make changes above, then click Save Changes.");
+    clearError();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function cancelEdit(){
+    editingId = null;
+    document.getElementById("addBtn").textContent = "Add Entry";
+    document.getElementById("cancelEditBtn").style.display = "none";
+    hideEditBar();
+    clearForm();
+    clearError();
+  }
+
+  function addOrSave(){
     try{
-      const date = document.getElementById("date").value || nowLocalDate();
-      const time = document.getElementById("time").value || nowLocalTime();
-      const timeBlock = document.getElementById("timeBlock").value;
-      const platform = document.getElementById("platform").value;
-      const views = toInt(document.getElementById("views").value);
-      const clicks = toInt(document.getElementById("clicks").value);
-      const dms = toInt(document.getElementById("dms").value);
-      const cred = document.getElementById("cred").value;
-      const status = document.getElementById("status").value;
-      const notes = document.getElementById("notes").value.trim();
+      clearError();
+      const data = getFormData();
+      const entries = loadEntries();
+
+      if(editingId){
+        const idx = entries.findIndex(x => x.id === editingId);
+        if(idx === -1){
+          cancelEdit();
+          showError("Could not find that entry to edit. It may have been deleted.");
+          return;
+        }
+        const old = entries[idx];
+        entries[idx] = { ...old, ...data, updatedAt: new Date().toISOString() };
+        saveEntries(entries);
+        cancelEdit();
+        renderTable();
+        return;
+      }
 
       const entry = {
         id: cryptoRandomId(),
-        date, time, timeBlock, platform,
-        views, clicks, dms,
-        cred, status, notes,
+        ...data,
         createdAt: new Date().toISOString()
       };
-
-      const entries = loadEntries();
       entries.push(entry);
       saveEntries(entries);
       renderTable();
-
-      document.getElementById("views").value = "";
-      document.getElementById("clicks").value = "";
-      document.getElementById("dms").value = "";
-      document.getElementById("notes").value = "";
-      document.getElementById("errorBox").style.display = "none";
+      clearForm();
     } catch(err){
-      showError("Add Entry failed: " + (err && err.message ? err.message : String(err)));
+      showError("Save failed: " + (err && err.message ? err.message : String(err)));
     }
   }
 
@@ -417,14 +505,9 @@
     setFormNow();
     renderTable();
 
-    document.getElementById("addBtn").addEventListener("click", addEntry);
-    document.getElementById("clearFormBtn").addEventListener("click", () => {
-      document.getElementById("views").value = "";
-      document.getElementById("clicks").value = "";
-      document.getElementById("dms").value = "";
-      document.getElementById("notes").value = "";
-      document.getElementById("errorBox").style.display = "none";
-    });
+    document.getElementById("addBtn").addEventListener("click", addOrSave);
+    document.getElementById("cancelEditBtn").addEventListener("click", cancelEdit);
+    document.getElementById("clearFormBtn").addEventListener("click", () => { clearForm(); clearError(); });
     document.getElementById("quickNowBtn").addEventListener("click", setFormNow);
 
     document.getElementById("exportJsonBtn").addEventListener("click", exportJson);
